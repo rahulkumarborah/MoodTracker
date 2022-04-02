@@ -1,13 +1,18 @@
-import { Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
+import MoodPicker from '../components/MoodPicker';
 import React from 'react';
 
 const HomeScreen: React.FC = () => {
   return (
-    <View>
-      <Text>Home</Text>
+    <View style={styles.container}>
+      <MoodPicker />
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: { flex: 1, justifyContent: 'center', paddingHorizontal: 10 },
+});
 
 export default HomeScreen;
