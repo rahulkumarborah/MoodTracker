@@ -37,11 +37,7 @@ const AppContext = createContext<AppContextType>({
   handleSelectMood: () => {},
 });
 
-export default function AppProvider({
-  children,
-}: {
-  children: React.ReactNode;
-}): React.ReactElement {
+export const AppProvider: React.FC = ({ children }) => {
   const [moodList, setMoodList] = useState<MoodOptionWithTimestamp[]>([]);
 
   useEffect(() => {
@@ -73,6 +69,8 @@ export default function AppProvider({
       {children}
     </AppContext.Provider>
   );
-}
+};
+
+export default AppProvider;
 
 export const useAppContext = () => useContext(AppContext);
