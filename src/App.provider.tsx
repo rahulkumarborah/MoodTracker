@@ -1,7 +1,31 @@
 import { MoodOptionType, MoodOptionWithTimestamp } from './types';
-import React, { useCallback, useContext, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createContext } from 'react';
+
+type AppData = {
+  moodList: MoodOptionWithTimestamp[];
+};
+
+const dataKey = 'my-app-data';
+
+const setAppData = async (data: AppData): Promise<void> => {
+  try {
+    await AsyncStorage.setItem(dataKey, JSON.stringify(data));
+  } catch {}
+};
+
+const getAppData = async (): Promise<AppData | null> => {
+  try {
+    const data = await AsyncStorage.getItem(dataKey);
+    if (data) {
+      return JSON.parse(data);
+    }
+  } catch {}
+
+  return null;
+};
 
 type AppContextType = {
   moodList: MoodOptionWithTimestamp[];
@@ -20,11 +44,28 @@ export default function AppProvider({
 }): React.ReactElement {
   const [moodList, setMoodList] = useState<MoodOptionWithTimestamp[]>([]);
 
+  useEffect(() => {
+    const fetchAppData = async () => {
+      const data = await getAppData();
+      if (data) {
+        setMoodList(data.moodList);
+      }
+    };
+
+    fetchAppData();
+  });
+
   const handleSelectMood = useCallback((selectedMood: MoodOptionType) => {
-    setMoodList(current => [
-      ...current,
-      { mood: selectedMood, timestamp: Date.now() },
-    ]);
+    setMoodList(current => {
+      const newMoodList = [
+        ...current,
+        { mood: selectedMood, timestamp: Date.now() },
+      ];
+
+      setAppData({ moodList: newMoodList });
+
+      return newMoodList;
+    });
   }, []);
 
   return (
